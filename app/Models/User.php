@@ -27,7 +27,9 @@ class User extends Authenticatable
         'experience',
         'education',
         'is_active',
-        'profile_picture'
+        'profile_picture',
+        'profile_picture',
+        'is_super_admin' ,
     ];
 
     protected $hidden = [
@@ -38,7 +40,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'skills' => 'array',
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
+        'is_super_admin' => 'boolean'
     ];
 
     // Relationships
@@ -161,5 +164,10 @@ class User extends Authenticatable
         }
         
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=4e73df&color=fff&size=200&bold=true';
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->is_super_admin === true;
     }
 }

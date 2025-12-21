@@ -15,12 +15,12 @@
                     <h4 class="card-title">Site Settings</h4>
                 </div>
                 <div class="card-body">
-                    @if(session('success'))
+                    <!-- @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             {{ session('success') }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
-                    @endif
+                    @endif -->
 
                     <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -132,12 +132,12 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">
-                            <button type="button" onclick="clearCache()" 
+                            <!-- <button type="cencel"
                                 class="btn btn-secondary">
-                                <i class="fas fa-sync-alt"></i> Clear Cache
-                            </button>
+                                <i class="fas fa-sync-alt"></i> Clear
+                            </button> -->
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Save Settings
+                                <i class="fas fa-save me-1"></i> Save Settings
                             </button>
                         </div>
                     </form>
