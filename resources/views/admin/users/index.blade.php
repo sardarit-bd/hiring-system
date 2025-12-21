@@ -35,7 +35,7 @@
                                     <th>Role</th>
                                     <th>Status</th>
                                     <th>Joined</th>
-                                    <th>Actions</th>
+                                    <th style="width: 140px;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -71,27 +71,29 @@
                                         </td>
                                         <td>{{ $user->created_at->format('M d, Y') }}</td>
                                         <td>
-                                            <div class="btn-group btn-group-sm">
+                                            <div class="btn-group btn-group-sm" role="group">
                                                 <button type="button" class="btn btn-info" data-bs-toggle="modal" 
-                                                        data-bs-target="#userModal{{ $user->id }}">
+                                                        data-bs-target="#userModal{{ $user->id }}" title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
                                                 
                                                 @if($user->id !== auth()->id())
-                                                    <form action="{{ route('admin.users.toggle', $user) }}" method="POST" class="d-inline">
+                                                    <form action="{{ route('admin.users.toggle', $user) }}" method="POST" class="btn-group" role="group">
                                                         @csrf
                                                         @method('PUT')
                                                         <button type="submit" class="btn btn-{{ $user->is_active ? 'warning' : 'success' }}" 
-                                                                title="{{ $user->is_active ? 'Deactivate' : 'Activate' }}">
+                                                                title="{{ $user->is_active ? 'Deactivate' : 'Activate' }}"
+                                                                onclick="return confirm('Are you sure you want to {{ $user->is_active ? 'deactivate' : 'activate' }} this user?')">
                                                             <i class="fas fa-{{ $user->is_active ? 'ban' : 'check' }}"></i>
                                                         </button>
                                                     </form>
                                                     
-                                                    <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="d-inline">
+                                                    <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="btn-group" role="group">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger" 
-                                                                onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">
+                                                                onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.')"
+                                                                title="Delete User">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
                                                     </form>
@@ -100,72 +102,6 @@
                                                         <i class="fas fa-user-lock"></i>
                                                     </button>
                                                 @endif
-                                            </div>
-
-                                            <!-- User Details Modal -->
-                                            <div class="modal fade" id="userModal{{ $user->id }}" tabindex="-1">
-                                                <div class="modal-dialog modal-lg">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">User Details</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <div class="row">
-                                                                <div class="col-md-6">
-                                                                    <h6>Basic Information</h6>
-                                                                    <p><strong>Name:</strong> {{ $user->name }}</p>
-                                                                    <p><strong>Email:</strong> {{ $user->email }}</p>
-                                                                    <p><strong>Phone:</strong> {{ $user->phone ?? 'Not provided' }}</p>
-                                                                    <p><strong>Address:</strong> {{ $user->address ?? 'Not provided' }}</p>
-                                                                    <p><strong>Registered:</strong> {{ $user->created_at->format('F d, Y') }}</p>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <h6>Role Information</h6>
-                                                                    <p><strong>Role:</strong> {{ ucfirst(str_replace('_', ' ', $user->role)) }}</p>
-                                                                    <p><strong>Status:</strong> 
-                                                                        @if($user->is_active)
-                                                                            <span class="badge bg-success">Active</span>
-                                                                        @else
-                                                                            <span class="badge bg-danger">Inactive</span>
-                                                                        @endif
-                                                                    </p>
-                                                                    
-                                                                    @if($user->isEmployer())
-                                                                        <hr>
-                                                                        <h6>Company Information</h6>
-                                                                        <p><strong>Company:</strong> {{ $user->company_name }}</p>
-                                                                        <p><strong>Industry:</strong> {{ $user->industry ?? 'Not specified' }}</p>
-                                                                        <p><strong>Website:</strong> 
-                                                                            @if($user->website)
-                                                                                <a href="{{ $user->website }}" target="_blank">{{ $user->website }}</a>
-                                                                            @else
-                                                                                Not provided
-                                                                            @endif
-                                                                        </p>
-                                                                        <p><strong>Jobs Posted:</strong> {{ $user->openjobs()->count() }}</p>
-                                                                    @endif
-                                                                    
-                                                                    @if($user->isJobSeeker())
-                                                                        <hr>
-                                                                        <h6>Job Seeker Information</h6>
-                                                                        <p><strong>Skills:</strong> 
-                                                                            @if($user->skills && is_array(json_decode($user->skills, true)))
-                                                                                {{ implode(', ', json_decode($user->skills, true)) }}
-                                                                            @else
-                                                                                Not specified
-                                                                            @endif
-                                                                        </p>
-                                                                        <p><strong>Applications:</strong> {{ $user->applications()->count() }}</p>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </td>
                                     </tr>
@@ -230,4 +166,113 @@
         </div>
     </div>
 </div>
+
+<!-- User Details Modals (Placed at the end of body to avoid blink issue) -->
+@foreach($users as $user)
+<div class="modal fade" id="userModal{{ $user->id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header  px-4">
+                <h5 class="modal-title">User Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row p-3">
+                    <div class="col-md-6">
+                        <h4 class="mb-3 text-primary">Basic Information</h6>
+                        <p><strong>Name:</strong> {{ $user->name }}</p>
+                        <p><strong>Email:</strong> {{ $user->email }}</p>
+                        <p><strong>Phone:</strong> {{ $user->phone ?? 'Not provided' }}</p>
+                        <p><strong>Address:</strong> {{ $user->address ?? 'Not provided' }}</p>
+                        <p><strong>Registered:</strong> {{ $user->created_at->format('F d, Y') }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h4 class="mb-3 text-primary">Role Information</h6>
+                        <p><strong>Role:</strong> {{ ucfirst(str_replace('_', ' ', $user->role)) }}</p>
+                        <p><strong>Status:</strong> 
+                            @if($user->is_active)
+                                <span class="badge bg-success">Active</span>
+                            @else
+                                <span class="badge bg-danger">Inactive</span>
+                            @endif
+                        </p>
+                        
+                        @if($user->isEmployer())
+                            <hr>
+                            <h4 class="mb-3 text-primary">Company Information</h4>
+                            <p><strong>Company:</strong> {{ $user->company_name }}</p>
+                            <p><strong>Industry:</strong> {{ $user->industry ?? 'Not specified' }}</p>
+                            <p><strong>Website:</strong> 
+                                @if($user->website)
+                                    <a href="{{ $user->website }}" target="_blank">{{ $user->website }}</a>
+                                @else
+                                    Not provided
+                                @endif
+                            </p>
+                            <p><strong>Jobs Posted:</strong> {{ $user->openjobs()->count() }}</p>
+                        @endif
+                        
+                        @if($user->isJobSeeker())
+                            <hr>
+                            <h6>Job Seeker Information</h6>
+                            <p><strong>Skills:</strong> 
+                                @if($user->skills && is_array(json_decode($user->skills, true)))
+                                    {{ implode(', ', json_decode($user->skills, true)) }}
+                                @else
+                                    Not specified
+                                @endif
+                            </p>
+                            <p><strong>Applications:</strong> {{ $user->applications()->count() }}</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div> -->
+        </div>
+    </div>
+</div>
+@endforeach
 @endsection
+
+@push('styles')
+<style>
+    .modal {
+        backdrop-filter: blur(2px);
+    }
+    
+    .modal.fade .modal-dialog {
+        transition: transform 0.3s ease-out;
+    }
+    
+    .btn-group-sm > .btn,
+    .btn-group > .btn {
+        border-radius: 0;
+    }
+    
+    .btn-group-sm > .btn:first-child,
+    .btn-group > .btn:first-child {
+        border-top-left-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+    }
+    
+    .btn-group-sm > .btn:last-child,
+    .btn-group > .btn:last-child {
+        border-top-right-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
+    }
+    
+    /* Responsive styles for buttons */
+    @media (max-width: 768px) {
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .btn-group .btn {
+            margin-bottom: 2px;
+        }
+    }
+</style>
+@endpush

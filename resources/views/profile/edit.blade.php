@@ -278,4 +278,18 @@
         }
     });
 </script>
+<style>
+    /* Active tab background + text color */
+    .nav-tabs .nav-link.active {
+        background-color: #0d6efd; /* Bootstrap primary */
+        color: #fff !important;
+        border-color: #0d6efd;
+    }
+
+    /* Inactive tab hover effect (optional but nice) */
+    .nav-tabs .nav-link:hover {
+        color: #0d6efd;
+    }
+</style>
+
 @endsection

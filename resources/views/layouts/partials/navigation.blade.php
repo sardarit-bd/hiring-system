@@ -146,29 +146,29 @@
                             @if(auth()->user()->hasRole('admin'))
                                 <li>
                                     <a class="dropdown-item py-2 px-3 rounded-3 transition-all" href="{{ route('admin.dashboard') }}">
-                                        <i class="fas fa-cog text-primary me-2"></i>
+                                        <i class="fas fa-user-tag text-primary me-2"></i>
                                         <span>Admin Panel</span>
+                                    </a>
+                                </li>
+                            @else
+                                <li>
+                                    <a class="dropdown-item py-2 px-3 rounded-3 transition-all" href="{{ route('dashboard') }}">
+                                        <i class="fas fa-tachometer-alt text-primary me-2"></i>
+                                        <span>Dashboard</span>
                                     </a>
                                 </li>
                             @endif
                             
                             <li>
-                                <a class="dropdown-item py-2 px-3 rounded-3 transition-all" href="{{ route('dashboard') }}">
-                                    <i class="fas fa-tachometer-alt text-primary me-2"></i>
-                                    <span>Dashboard</span>
-                                </a>
-                            </li>
-                            
-                            <li>
                                 <a class="dropdown-item py-2 px-3 rounded-3 transition-all" href="{{ route('profile.edit') }}">
-                                    <i class="fas fa-user-edit text-primary me-2"></i>
-                                    <span>Edit Profile</span>
+                                    <i class="fas fa-cog text-primary me-2"></i>
+                                    <span>Account Settings</span>
                                 </a>
                             </li>
                             
                             @if(auth()->user()->hasRole('job_seeker'))
                                 <li>
-                                    <a class="dropdown-item py-2 px-3 rounded-3 transition-all" href="{{ route('job-seeker.dashboard') }}">
+                                    <a class="dropdown-item py-2 px-3 rounded-3 transition-all" href="{{ route('job-seeker.profile.edit') }}">
                                         <i class="fas fa-id-card text-primary me-2"></i>
                                         <span>My Profile</span>
                                     </a>

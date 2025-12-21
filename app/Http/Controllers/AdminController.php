@@ -232,9 +232,6 @@ class AdminController extends Controller
             // Store logo path in database or config
         }
 
-        // Update .env or database settings here
-        // For demo, we'll just show success message
-
         return back()->with('success', 'Settings updated successfully!');
     }
 
@@ -261,96 +258,93 @@ class AdminController extends Controller
 
     public function resetStats()
     {
-        // Reset all counters to 0
-        // This would be implemented based on your specific requirements
-        
+       
         return back()->with('success', 'Statistics reset successfully!');
     }
 
-    // AdminController.php এর মধ্যে এই methods গুলো যোগ করুন
 
-public function contactMessages(Request $request)
-{
-    $query = ContactMessage::query();
+    public function contactMessages(Request $request)
+    {
+        $query = ContactMessage::query();
 
-    // Filter by status
-    if ($request->has('status')) {
-        $query->where('status', $request->status);
+        // Filter by status
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Search
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('email', 'LIKE', "%{$search}%")
+                ->orWhere('subject', 'LIKE', "%{$search}%")
+                ->orWhere('message', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Date filter
+        if ($request->has('date_from') && $request->date_from) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->has('date_to') && $request->date_to) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $messages = $query->latest()->paginate(20);
+
+        return view('admin.contact.index', compact('messages'));
     }
 
-    // Search
-    if ($request->has('search')) {
-        $search = $request->search;
-        $query->where(function($q) use ($search) {
-            $q->where('name', 'LIKE', "%{$search}%")
-              ->orWhere('email', 'LIKE', "%{$search}%")
-              ->orWhere('subject', 'LIKE', "%{$search}%")
-              ->orWhere('message', 'LIKE', "%{$search}%");
-        });
+    public function showContactMessage(ContactMessage $message)
+    {
+        // Mark as read when viewing
+        if ($message->status === 'unread') {
+            $message->update(['status' => 'read']);
+        }
+
+        return view('admin.contact.show', compact('message'));
     }
 
-    // Date filter
-    if ($request->has('date_from') && $request->date_from) {
-        $query->whereDate('created_at', '>=', $request->date_from);
+    public function updateContactMessage(Request $request, ContactMessage $message)
+    {
+        $request->validate([
+            'status' => 'required|in:unread,read,replied,spam',
+            'admin_notes' => 'nullable|string|max:1000'
+        ]);
+
+        $message->update([
+            'status' => $request->status,
+            'admin_notes' => $request->admin_notes
+        ]);
+
+        return redirect()->route('admin.contact.show', $message)
+            ->with('success', 'Message updated successfully!');
     }
 
-    if ($request->has('date_to') && $request->date_to) {
-        $query->whereDate('created_at', '<=', $request->date_to);
+    public function replyToMessage(Request $request, ContactMessage $message)
+    {
+        $request->validate([
+            'reply_message' => 'required|string|max:1000'
+        ]);
+
+        // Here you would implement email sending logic
+        // For now, we'll just mark as replied and save the reply in notes
+        $message->update([
+            'status' => 'replied',
+            'admin_notes' => 'Replied on ' . now()->format('Y-m-d H:i:s') . ': ' . $request->reply_message
+        ]);
+
+        return redirect()->route('admin.contact.show', $message)
+            ->with('success', 'Reply sent successfully!');
     }
 
-    $messages = $query->latest()->paginate(20);
+    public function deleteContactMessage(ContactMessage $message)
+    {
+        $message->delete();
 
-    return view('admin.contact.index', compact('messages'));
-}
-
-public function showContactMessage(ContactMessage $message)
-{
-    // Mark as read when viewing
-    if ($message->status === 'unread') {
-        $message->update(['status' => 'read']);
+        return redirect()->route('admin.contact.index')
+            ->with('success', 'Message deleted successfully!');
     }
-
-    return view('admin.contact.show', compact('message'));
-}
-
-public function updateContactMessage(Request $request, ContactMessage $message)
-{
-    $request->validate([
-        'status' => 'required|in:unread,read,replied,spam',
-        'admin_notes' => 'nullable|string|max:1000'
-    ]);
-
-    $message->update([
-        'status' => $request->status,
-        'admin_notes' => $request->admin_notes
-    ]);
-
-    return redirect()->route('admin.contact.show', $message)
-        ->with('success', 'Message updated successfully!');
-}
-
-public function replyToMessage(Request $request, ContactMessage $message)
-{
-    $request->validate([
-        'reply_message' => 'required|string|max:1000'
-    ]);
-
-    // Here you would implement email sending logic
-    // For now, we'll just mark as replied and save the reply in notes
-    $message->update([
-        'status' => 'replied',
-        'admin_notes' => 'Replied on ' . now()->format('Y-m-d H:i:s') . ': ' . $request->reply_message
-    ]);
-
-    return redirect()->route('admin.contact.show', $message)
-        ->with('success', 'Reply sent successfully!');
-}
-
-public function deleteContactMessage(ContactMessage $message)
-{
-    $message->delete();
-
-    return redirect()->route('admin.contact.index')
-        ->with('success', 'Message deleted successfully!');
-}
 }

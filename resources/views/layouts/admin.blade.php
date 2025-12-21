@@ -202,7 +202,7 @@
         .nav-link.active::before {
             content: '';
             position: absolute;
-            left: -20px;
+            left: -0px;
             top: 50%;
             transform: translateY(-50%);
             width: 4px;
@@ -1077,14 +1077,14 @@
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
                             <a class="dropdown-item" href="{{ route('profile.edit') }}">
-                                <i class="fas fa-user-circle"></i> My Profile
+                                <i class="fas fa-cog"></i> Account Settings
                             </a>
                         </li>
-                        <li>
+                        <!-- <li>
                             <a class="dropdown-item" href="{{ route('dashboard') }}">
-                                <i class="fas fa-tachometer-alt"></i> User Dashboard
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
                             </a>
-                        </li>
+                        </li> -->
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form method="POST" action="{{ route('logout') }}">
