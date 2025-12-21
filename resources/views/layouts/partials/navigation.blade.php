@@ -8,7 +8,7 @@
             @endphp
             
             @if($site_logo)
-                <div class="brand-logo-container me-3 p-1 bg-light rounded-3 transition-all">
+                <div class="brand-logo-container me-2 p-1 bg-light rounded-3 transition-all">
                     <img src="{{ asset('storage/' . $site_logo) }}" 
                          alt="{{ $site_name }}" 
                          class="brand-logo img-fluid" 
@@ -52,7 +52,7 @@
             <a class="nav-link d-flex align-items-center py-2 px-3 rounded-3 transition-all {{ request()->routeIs('jobs.*') ? 'active text-white bg-primary' : 'text-dark' }}" 
                href="{{ route('jobs.index') }}">
                 <!-- <i class="fas fa-briefcase me-2 fs-6"></i> -->
-                <span class="fw-medium">Find Jobs</span>
+                <span class="fw-medium">Jobs</span>
                 <!-- @if(isset($activeJobsCount))
                     <span class="badge bg-danger ms-2 transition-all" style="font-size: 0.65rem; padding: 2px 6px;">
                         {{ $activeJobsCount }}
@@ -134,13 +134,13 @@
                         
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 transition-all" style="min-width: 220px;">
                             <!-- Role Badge -->
-                            <li class="px-3 py-2">
+                            <!-- <li class="px-3 py-2">
                                 <small class="badge bg-primary text-white text-uppercase fw-medium transition-all">
                                     <i class="fas fa-user-tag me-1"></i>
                                     {{ auth()->user()->role }}
                                 </small>
                             </li>
-                            <li><hr class="dropdown-divider my-2"></li>
+                            <li><hr class="dropdown-divider my-2"></li> -->
                             
                             <!-- Dashboard Links -->
                             @if(auth()->user()->hasRole('admin'))

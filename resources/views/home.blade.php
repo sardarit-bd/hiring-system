@@ -647,9 +647,9 @@
     .category-card h3 {
         position: relative;
         z-index: 2;
-        font-size: 1.5rem;
+        font-size: 1.1rem;
         font-weight: 700;
-        /* margin-bottom: 15px; */
+        margin-bottom: 0; 
         color: var(--dark);
         transition: var(--transition);
     }

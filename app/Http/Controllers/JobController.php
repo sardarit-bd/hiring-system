@@ -163,7 +163,7 @@ class JobController extends Controller
         }
 
         return view('jobs.edit', [
-            'openjob' => $openjob,  // Changed from $job to $openjob
+            'openjob' => $openjob,  
             'categories' => $categories,
             'profile' => $profile,
             'user' => $user,
@@ -255,63 +255,87 @@ class JobController extends Controller
     }
 
     public function apply(Request $request, OpenJob $openjob)
-    {
-        // Check if user is job seeker
-        if (!Auth::user()->isJobSeeker()) {
-            abort(403, 'Only job seekers can apply for jobs.');
-        }
-
-        $request->validate([
-            'cover_letter' => 'required|string|min:100|max:1000',
-            'resume' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-        ]);
-
-        // Check if already applied
-        if (Auth::user()->hasApplied($openjob->id)) {
-            return back()->with('error', 'You have already applied for this job!');
-        }
-
-        // Check if job is active and approved
-        if (!$openjob->is_active || $openjob->status !== 'approved' || $openjob->deadline < now()) {
-            return back()->with('error', 'This job is no longer accepting applications.');
-        }
-
-        $applicationData = [
-            'job_id' => $openjob->id,
-            'job_seeker_id' => Auth::id(),
-            'cover_letter' => $request->cover_letter,
-            'applied_at' => now(),
-        ];
-
-        // Handle resume upload
-        if ($request->hasFile('resume')) {
-            $path = $request->file('resume')->store('resumes', 'public');
-            $applicationData['resume_path'] = $path;
-        } else {
-            // Use existing resume from profile
-            $applicationData['resume_path'] = Auth::user()->resume_path;
-        }
-
-        JobApplication::create($applicationData);
-
-        return back()->with('success', 'Application submitted successfully!');
+{
+    // Check if user is job seeker
+    if (!Auth::user()->isJobSeeker()) {
+        abort(403, 'Only job seekers can apply for jobs.');
     }
 
-    public function category($slug)
-{
-    $jobs = OpenJob::with(['employer', 'category'])
-        ->whereHas('category', function ($q) use ($slug) {
-            $q->where('slug', $slug);
-        })
-        ->where('status', 'approved')
-        ->where('is_active', 1)
-        ->whereDate('deadline', '>=', now())
-        ->latest()
-        ->paginate(10);
+    $request->validate([
+        'cover_letter' => 'required|string|min:100|max:1000',
+        'resume' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+    ]);
 
-    $category = Category::where('slug', $slug)->firstOrFail();
+    // Check if already applied
+    if (Auth::user()->hasApplied($openjob->id)) {
+        return back()->with('error', 'You have already applied for this job!');
+    }
 
-    return view('jobs.category', compact('jobs', 'category'));
+    // Check if job is active and approved
+    if (!$openjob->is_active || $openjob->status !== 'approved' || $openjob->deadline < now()) {
+        return back()->with('error', 'This job is no longer accepting applications.');
+    }
+
+    $applicationData = [
+        'job_id' => $openjob->id,
+        'job_seeker_id' => Auth::id(),
+        'cover_letter' => $request->cover_letter,
+        'applied_at' => now(),
+    ];
+
+    // Handle resume upload with applicant's name
+    if ($request->hasFile('resume')) {
+        $file = $request->file('resume');
+        $user = Auth::user();
+        
+        // Clean applicant name (remove special characters and spaces)
+        $applicantName = preg_replace('/[^A-Za-z0-9]/', '_', $user->name);
+        
+        // Clean job title
+        $jobTitle = preg_replace('/[^A-Za-z0-9]/', '_', $openjob->title);
+        
+        // Get file extension
+        $extension = $file->getClientOriginalExtension();
+        
+        // Create filename: ApplicantName_JobTitle_Timestamp.ext
+        $filename = $applicantName . '.' . $extension;
+        
+        // Make sure filename is not too long
+        if (strlen($filename) > 150) {
+            // Shorten job title if needed
+            $jobTitle = substr($jobTitle, 0, 50);
+            $filename = $applicantName . '.' . $extension;
+        }
+        
+        // Store file with custom name
+        $path = $file->storeAs('resumes', $filename, 'public');
+        $applicationData['resume_path'] = $path;
+    } else {
+        // Use existing resume from profile
+        $applicationData['resume_path'] = Auth::user()->resume_path;
+    }
+
+    JobApplication::create($applicationData);
+
+    return back()->with('success', 'Application submitted successfully!');
 }
+    
+
+    public function category($slug)
+    {
+        $jobs = OpenJob::with(['employer', 'category'])
+            ->whereHas('category', function ($q) use ($slug) {
+                $q->where('slug', $slug);
+            })
+            ->where('status', 'approved')
+            ->where('is_active', 1)
+            ->whereDate('deadline', '>=', now())
+            ->latest()
+            ->paginate(10);
+
+        $category = Category::where('slug', $slug)->firstOrFail();
+
+        return view('jobs.category', compact('jobs', 'category'));
+    }
 
 }
