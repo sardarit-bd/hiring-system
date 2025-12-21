@@ -18,7 +18,7 @@
                     <h6 class="m-0 font-weight-bold text-primary me-2">All Users ({{ $users->total() }})</h6>
                     <div>
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#filterModal">
-                            <i class="fas fa-filter me-1"></i>Filters
+                            <i class="fas fa-filter me-1 text-light"></i>Filters
                         </button>
                     </div>
                 </div>
@@ -30,19 +30,19 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>User</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
-                                    <th>Joined</th>
-                                    <th style="width: 140px;">Actions</th>
+                                    <th class="text-center">User</th>
+                                    <th class="text-center">Email</th>
+                                    <th class="text-center">Role</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Joined</th>
+                                    <th class="text-center" style="width: 140px;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($users as $user)
                                     <tr>
                                         <td>{{ $user->id }}</td>
-                                        <td>
+                                        <td class="text-center">
                                             <div class="d-flex align-items-center">
                                                 <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
                                                      style="width: 40px; height: 40px;">
@@ -56,28 +56,30 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>{{ $user->email }}</td>
-                                        <td>
+                                        <td class="text-center">{{ $user->email }}</td>
+                                        <td class="text-center">
                                             <span class="badge bg-{{ $user->role == 'admin' ? 'danger' : ($user->role == 'employer' ? 'primary' : 'success') }}">
                                                 {{ ucfirst(str_replace('_', ' ', $user->role)) }}
                                             </span>
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             @if($user->is_active)
                                                 <span class="badge bg-success">Active</span>
                                             @else
                                                 <span class="badge bg-danger">Inactive</span>
                                             @endif
                                         </td>
-                                        <td>{{ $user->created_at->format('M d, Y') }}</td>
-                                        <td>
-                                            <div class="btn-group btn-group-sm" role="group">
-                                                <button type="button" class="btn btn-info" data-bs-toggle="modal" 
-                                                        data-bs-target="#userModal{{ $user->id }}" title="View Details">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                
-                                                @if($user->id !== auth()->id())
+                                        <td class="text-center">{{ $user->created_at->format('M d, Y') }}</td>
+                                        <td class="text-center">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-info" data-bs-toggle="modal" 
+                                                    data-bs-target="#userModal{{ $user->id }}" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            
+                                            @if($user->id !== auth()->id())
+                                                <!-- Super admin check: যদি current user super admin হয়, অথবা target user admin না হয় -->
+                                                @if(auth()->user()->isSuperAdmin() || !$user->isAdmin())
                                                     <form action="{{ route('admin.users.toggle', $user) }}" method="POST" class="btn-group" role="group">
                                                         @csrf
                                                         @method('PUT')
@@ -98,12 +100,18 @@
                                                         </button>
                                                     </form>
                                                 @else
-                                                    <button class="btn btn-secondary" disabled title="Cannot modify your own account">
-                                                        <i class="fas fa-user-lock"></i>
+                                                    <!-- Regular admin অন্য admin কে manage করতে পারবে না -->
+                                                    <button class="btn btn-secondary" disabled title="Cannot manage admin users">
+                                                        <i class="fas fa-user-shield"></i>
                                                     </button>
                                                 @endif
-                                            </div>
-                                        </td>
+                                            @else
+                                                <button class="btn btn-secondary" disabled title="Cannot modify your own account">
+                                                    <i class="fas fa-user-lock"></i>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </td>
                                     </tr>
                                 @endforeach
                             </tbody>

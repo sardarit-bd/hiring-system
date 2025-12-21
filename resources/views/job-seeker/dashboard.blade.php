@@ -177,15 +177,15 @@
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body">
                     <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h3 class="text-primary mb-2">Welcome back, {{ Auth::user()->name }}!</h3>
-                            <p class="text-muted mb-0">
+                        <div class="">
+                            <h3 class="text-center">Welcome back, <span class="text-primary">{{ Auth::user()->name }}!</span></h3>
+                            <!-- <p class="text-muted mb-0">
                                 @if(Auth::user()->jobSeekerProfile && Auth::user()->jobSeekerProfile->summary)
                                     {{ Str::limit(Auth::user()->jobSeekerProfile->summary, 200) }}
                                 @else
                                     Complete your profile to get personalized job recommendations and increase your chances of getting hired.
                                 @endif
-                            </p>
+                            </p> -->
                         </div>
                         <!-- <div class="col-md-4 text-md-end mt-3 mt-md-0">
                             <div class="d-grid gap-2">

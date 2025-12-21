@@ -12,7 +12,7 @@
 @section('content')
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold text-primary">Contact Messages</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Messages</h6>
         <div class="btn-group">
             <a href="{{ route('admin.contact.index', ['status' => 'unread']) }}" class="btn btn-warning btn-sm">
                 <i class="fas fa-envelope me-1"></i> Unread ({{ \App\Models\ContactMessage::unread()->count() }})

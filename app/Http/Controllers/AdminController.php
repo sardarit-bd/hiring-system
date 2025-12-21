@@ -108,6 +108,10 @@ class AdminController extends Controller
             });
         }
 
+        // if (!auth()->user()->isSuperAdmin()) {
+        //     $query->where('role', '!=', 'admin');
+        // }
+
         $users = $query->latest()->paginate(20);
 
         return view('admin.users.index', compact('users'));
@@ -150,22 +154,38 @@ class AdminController extends Controller
 
     public function toggleUser(User $user)
     {
-        $user->update(['is_active' => !$user->is_active]);
+        if (auth()->user()->isSuperAdmin()) {
+            $user->update(['is_active' => !$user->is_active]);
+            $status = $user->is_active ? 'activated' : 'deactivated';
+            return back()->with('success', "User {$status} successfully!");
+        }
 
-        $status = $user->is_active ? 'activated' : 'deactivated';
-        return back()->with('success', "User {$status} successfully!");
+        if ($user->role !== 'admin') {
+            $user->update(['is_active' => !$user->is_active]);
+            $status = $user->is_active ? 'activated' : 'deactivated';
+            return back()->with('success', "User {$status} successfully!");
+        }
+        
+        return back()->with('error', 'You cannot manage admin users!');
     }
 
     public function destroyUser(User $user)
     {
-        // Prevent deleting own account
         if ($user->id === auth()->id()) {
             return back()->with('error', 'You cannot delete your own account!');
         }
 
-        $user->delete();
+        if (auth()->user()->isSuperAdmin()) {
+            $user->delete();
+            return back()->with('success', 'User deleted successfully!');
+        }
 
-        return back()->with('success', 'User deleted successfully!');
+        if ($user->role !== 'admin') {
+            $user->delete();
+            return back()->with('success', 'User deleted successfully!');
+        }
+        
+        return back()->with('error', 'You cannot delete admin users!');
     }
 
     public function reports()
@@ -329,8 +349,6 @@ class AdminController extends Controller
             'reply_message' => 'required|string|max:1000'
         ]);
 
-        // Here you would implement email sending logic
-        // For now, we'll just mark as replied and save the reply in notes
         $message->update([
             'status' => 'replied',
             'admin_notes' => 'Replied on ' . now()->format('Y-m-d H:i:s') . ': ' . $request->reply_message

@@ -30,13 +30,13 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Job Title</th>
-                                    <th>Company</th>
-                                    <th>Category</th>
-                                    <th>Location</th>
-                                    <th>Status</th>
-                                    <th>Applications</th>
-                                    <th>Deadline</th>
-                                    <th>Actions</th>
+                                    <th class="text-center">Company</th>
+                                    <th class="text-center">Category</th>
+                                    <th class="text-center">Location</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Applications</th>
+                                    <th class="text-center">Deadline</th>
+                                    <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -48,10 +48,10 @@
                                                 {{ Str::limit($job->title, 40) }}
                                             </a>
                                         </td>
-                                        <td>{{ $job->employer->company_name ?? $job->employer->name }}</td>
-                                        <td>{{ $job->category }}</td>
-                                        <td>{{ $job->location }}</td>
-                                        <td>
+                                        <td class="text-center">{{ $job->employer->company_name ?? $job->employer->name }}</td>
+                                        <td class="text-center">{{ $job->category }}</td>
+                                        <td class="text-center">{{ $job->location }}</td>
+                                        <td class="text-center">
                                             @if($job->status === 'approved')
                                                 <span class="badge bg-success">Approved</span>
                                             @elseif($job->status === 'pending')
@@ -66,55 +66,55 @@
                                                 <span class="badge bg-secondary">Inactive</span>
                                             @endif
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             <span class="badge bg-info">{{ $job->applications()->count() }}</span>
                                         </td>
-                                        <td>{{ $job->deadline->format('M d, Y') }}</td>
-                                        <td>
-    <div class="btn-group btn-group-sm" role="group">
-        <button type="button" class="btn btn-info" data-bs-toggle="modal" 
-                data-bs-target="#jobModal{{ $job->id }}" title="View Details">
-            <i class="fas fa-eye"></i>
-        </button>
-        
-        @if($job->status === 'pending')
-            <form action="{{ route('jobs.approve', $job) }}" method="POST" class="btn-group" role="group">
-                @csrf
-                <button type="submit" class="btn btn-success" title="Approve"
-                        onclick="return confirm('Are you sure you want to approve this job?')">
-                    <i class="fas fa-check"></i>
-                </button>
-            </form>
-            <form action="{{ route('jobs.reject', $job) }}" method="POST" class="btn-group" role="group">
-                @csrf
-                <button type="submit" class="btn btn-danger" title="Reject"
-                        onclick="return confirm('Are you sure you want to reject this job?')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </form>
-        @endif
-        
-        @if($job->status === 'approved')
-            <form action="{{ route('jobs.reject', $job) }}" method="POST" class="btn-group" role="group">
-                @csrf
-                <button type="submit" class="btn btn-warning" title="Reject"
-                        onclick="return confirm('Are you sure you want to reject this job?')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </form>
-        @endif
-        
-        @if($job->status === 'rejected')
-            <form action="{{ route('jobs.approve', $job) }}" method="POST" class="btn-group" role="group">
-                @csrf
-                <button type="submit" class="btn btn-success" title="Approve"
-                        onclick="return confirm('Are you sure you want to approve this job?')">
-                    <i class="fas fa-check"></i>
-                </button>
-            </form>
-        @endif
-    </div>
-</td>
+                                        <td class="text-center">{{ $job->deadline->format('M d, Y') }}</td>
+                                        <td class="text-center">
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button type="button" class="btn btn-info" data-bs-toggle="modal" 
+                                                        data-bs-target="#jobModal{{ $job->id }}" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                
+                                                @if($job->status === 'pending')
+                                                    <form action="{{ route('jobs.approve', $job) }}" method="POST" class="btn-group" role="group">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-success" title="Approve"
+                                                                onclick="return confirm('Are you sure you want to approve this job?')">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    </form>
+                                                    <form action="{{ route('jobs.reject', $job) }}" method="POST" class="btn-group" role="group">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-danger" title="Reject"
+                                                                onclick="return confirm('Are you sure you want to reject this job?')">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                                
+                                                @if($job->status === 'approved')
+                                                    <form action="{{ route('jobs.reject', $job) }}" method="POST" class="btn-group" role="group">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-warning" title="Reject"
+                                                                onclick="return confirm('Are you sure you want to reject this job?')">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                                
+                                                @if($job->status === 'rejected')
+                                                    <form action="{{ route('jobs.approve', $job) }}" method="POST" class="btn-group" role="group">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-success" title="Approve"
+                                                                onclick="return confirm('Are you sure you want to approve this job?')">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>

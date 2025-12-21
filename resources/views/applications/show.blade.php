@@ -132,7 +132,7 @@
                                 @csrf
                                 @method('PATCH')
                                 <div class="col-md-6">
-                                    <label class="form-label fw-medium">Change Status</label>
+                                    <!-- <label class="form-label fw-medium">Change Status</label> -->
                                     <select name="status" class="form-select" required>
                                         <option value="">Select new status...</option>
                                         <option value="reviewed" data-icon="fa-eye">Reviewed</option>
@@ -173,23 +173,24 @@
                         <div class="card-header bg-light py-3">
                             <h5 class="mb-0 fw-semibold">
                                 <i class="fas fa-file-pdf me-2 text-danger"></i>
-                                Resume / CV
+                                Resume 
                             </h5>
                         </div>
                         <div class="card-body">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
-                                    <h6 class="fw-medium mb-1">{{ basename($application->resume_path) }}</h6>
-                                    <small class="text-muted">
+                                    <h6 class="fw-medium mb-1">
+                                        <a href="{{ Storage::url($application->resume_path) }}" target="_blank" 
+                                   class="">
+                                    {{ basename($application->resume_path) }}
+                                        </a>
+                                    </h6>
+                                    <!-- <small class="text-muted">
                                         <i class="fas fa-download me-1"></i>
                                         Click to download
-                                    </small>
+                                    </small> -->
                                 </div>
-                                <a href="{{ Storage::url($application->resume_path) }}" target="_blank" 
-                                   class="btn btn-outline-primary d-flex align-items-center">
-                                    <i class="fas fa-download me-2"></i>
-                                    Download
-                                </a>
+                                
                             </div>
                         </div>
                     </div>
@@ -198,12 +199,12 @@
                     <!-- Notes Section -->
                     @if(auth()->user()->isEmployer() && $application->job->employer_id === auth()->id())
                     <div class="card border">
-                        <div class="card-header bg-light py-3">
+                        <!-- <div class="card-header bg-light py-3">
                             <h5 class="mb-0 fw-semibold">
                                 <i class="fas fa-sticky-note me-2 text-secondary"></i>
-                                Internal Notes
+                                Add Notes
                             </h5>
-                        </div>
+                        </div> -->
                         <div class="card-body">
                             @if($application->notes)
                             <div class="mb-4 p-3 bg-light-subtle rounded border">

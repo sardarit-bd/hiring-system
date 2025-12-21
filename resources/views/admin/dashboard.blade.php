@@ -156,22 +156,22 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Title</th>
-                                <th>Company</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th class="text-center">Title</th>
+                                <th class="text-center">Company</th>
+                                <th class="text-center">Status</th>
+                                <!-- <th>Actions</th> -->
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($recentJobs as $job)
                                 <tr>
-                                    <td>
+                                    <td class="text-center">
                                         <a href="{{ route('jobs.show', $job) }}" class="text-decoration-none">
                                             {{ Str::limit($job->title, 30) }}
                                         </a>
                                     </td>
-                                    <td>{{ $job->employer->company_name ?? 'N/A' }}</td>
-                                    <td>
+                                    <td class="text-center">{{ $job->employer->company_name ?? 'N/A' }}</td>
+                                    <td class="text-center">
                                         @if($job->status === 'approved')
                                             <span class="badge bg-success">Approved</span>
                                         @elseif($job->status === 'pending')
@@ -180,7 +180,7 @@
                                             <span class="badge bg-danger">Rejected</span>
                                         @endif
                                     </td>
-                                    <td>
+                                    <!-- <td>
                                         <div class="btn-group btn-group-sm">
                                             <a href="{{ route('jobs.show', $job) }}" class="btn btn-info">
                                                 <i class="fas fa-eye"></i>
@@ -200,7 +200,7 @@
                                                 </form>
                                             @endif
                                         </div>
-                                    </td>
+                                    </td> -->
                                 </tr>
                             @endforeach
                         </tbody>
